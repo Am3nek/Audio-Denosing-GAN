@@ -13,7 +13,7 @@ Welcome to **Project Name** – a cutting-edge multi-chat application integrated
 Before you begin, ensure you have the following installed:
 
 - **Node.js** (v14 or higher) and **npm** or **yarn** for the frontend.
-- **Python 3.8+** and **pip** for the backend.
+- **Python 3.10+** and **pip** for the backend.
 - A virtual environment tool (e.g., `venv` or `virtualenv`) for Python.
 - **Tailwind CSS** configured with PostCSS (verify your `tailwind.config.js` includes your React files, e.g., `./src/**/*.{js,ts,jsx,tsx}`).
 - **shadcn UI** installed and properly integrated.
@@ -22,6 +22,7 @@ Before you begin, ensure you have the following installed:
   - `flask-cors`
   - `python-jwt`
   - `requests`
+  - `Mistralai 0.4.2`
 
 ---
 
@@ -32,3 +33,17 @@ Before you begin, ensure you have the following installed:
 1. **Navigate to the Frontend Directory:**
    ```bash
    cd frontend
+
+2. **Install Dependencies:**
+   ```bash
+   npm install
+  or if using yarn:
+    ```bash
+    yarn install
+
+3. **Install Dependencies:**
+   ```bash
+   npm install
+2. **Install Dependencies:**
+   ```bash
+   npm install
