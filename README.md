@@ -37,13 +37,31 @@ Before you begin, ensure you have the following installed:
 2. **Install Dependencies:**
    ```bash
    npm install
-  or if using yarn:
-    ```bash
-    yarn install
 
 3. **Install Dependencies:**
    ```bash
    npm install
-2. **Install Dependencies:**
+
+### Backend
+
+1. **Navigate to the Backend Directory:**
+
    ```bash
-   npm install
+   cd backend
+
+2. **Create and Activate a Virtual Environment:**
+   ```bash
+    python -m venv venv
+    # For Linux/Mac:
+    source venv/bin/activate
+    # For Windows:
+    venv\Scripts\activate
+
+3. **Install Required Python Packages:**
+   ```bash
+   pip install -r requirements.txt
+
+4. **Start the Flask Server:**
+   ```bash
+   python app.py
+  The backend server will run at http://127.0.0.1:5000.
