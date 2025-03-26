@@ -1,0 +1,76 @@
+import torch
+import torch.nn as nn
+
+class ConvBlock(nn.Module):
+    def __init__(self, input_size, output_size):
+        super().__init__()
+        self.block = nn.Sequential(
+            nn.Conv1d(in_channels=input_size, out_channels=output_size, kernel_size=3, stride=1, padding=1),
+            nn.BatchNorm1d(output_size),
+            nn.ReLU(inplace=True),
+            nn.Conv1d(in_channels=output_size, out_channels=output_size, kernel_size=3, stride=1, padding=1),
+            nn.BatchNorm1d(output_size),
+            nn.ReLU(inplace=True)
+        )
+    
+    def forward(self, x):
+        return self.block(x)
+
+class Generator(nn.Module):
+    def __init__(self, input_size):
+        super().__init__()
+        
+        # Downsampling
+        self.up_sample_1 = ConvBlock(input_size, 64)
+        self.max_pool_1 = nn.MaxPool1d(kernel_size=4, stride=4)
+        self.up_sample_2 = ConvBlock(64, 128)
+        self.max_pool_2 = nn.MaxPool1d(kernel_size=4, stride=4)
+        self.up_sample_3 = ConvBlock(128, 256)
+        self.max_pool_3 = nn.MaxPool1d(kernel_size=4, stride=4)
+        self.up_sample_4 = ConvBlock(256, 512)
+        self.max_pool_4 = nn.MaxPool1d(kernel_size=4, stride=4)
+
+        # Bridge
+        self.bridge = ConvBlock(512, 1024)
+
+        # Upsampling (Reversing MaxPooling)
+        self.up_conv_4 = nn.ConvTranspose1d(1024, 1024, kernel_size=4, stride=4)
+        self.down_sample_4 = ConvBlock(1536, 512)
+        self.up_conv_3 = nn.ConvTranspose1d(512, 512, kernel_size=4, stride=4)
+        self.down_sample_3 = ConvBlock(768, 256)
+        self.up_conv_2 = nn.ConvTranspose1d(256, 256, kernel_size=4, stride=4)
+        self.down_sample_2 = ConvBlock(384, 128)
+        self.up_conv_1 = nn.ConvTranspose1d(128, 128, kernel_size=4, stride=4)
+        self.down_sample_1 = ConvBlock(192, 64)
+
+        # Final layer (Output should have the same sequence length as input)
+        self.final = nn.Conv1d(64, 1, kernel_size=3, padding=1)
+
+    def forward(self, x):
+        x1 = self.up_sample_1(x)
+        x2 = self.max_pool_1(x1)
+        x2 = self.up_sample_2(x2)
+        x3 = self.max_pool_2(x2)
+        x3 = self.up_sample_3(x3)
+        x4 = self.max_pool_3(x3)
+        x4 = self.up_sample_4(x4)
+        x5 = self.max_pool_4(x4)
+
+        x5 = self.bridge(x5)
+
+        x5 = self.up_conv_4(x5)
+        x5 = torch.cat([x5, x4], dim=1)
+        x5 = self.down_sample_4(x5)
+        x5 = self.up_conv_3(x5)
+        x5 = torch.cat([x5, x3], dim=1)
+        x5 = self.down_sample_3(x5)
+        x5 = self.up_conv_2(x5)
+        x5 = torch.cat([x5, x2], dim=1)
+        x5 = self.down_sample_2(x5)
+        x5 = self.up_conv_1(x5)
+        x5 = torch.cat([x5, x1], dim=1)
+        x5 = self.down_sample_1(x5)
+
+        x5 = self.final(x5)
+
+        return x5
